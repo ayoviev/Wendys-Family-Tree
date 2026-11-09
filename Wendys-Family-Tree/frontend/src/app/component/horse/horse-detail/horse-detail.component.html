@@ -1,0 +1,112 @@
+@if (horse) {
+  <div class="container mt-4">
+    <div class="card shadow-sm">
+      <div class="card-header text-white d-flex align-items-center justify-content-between"
+          [style.background-color]= "horse.sex === 'FEMALE' ? '#e83e8c' : '#0d6efd'">
+        <h1 class="mb-0 fs-2">{{ horse.name }}</h1>
+        <span class="badge bg-light text-dark fs-6">
+            @if (horse.sex === 'FEMALE') {
+              <i class="bi bi-gender-female" style="color: #e83e8c;"></i> Female
+            } @else {
+              <i class="bi bi-gender-male" style="color: #0d6efd;"></i> Male
+            }
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <th class="text-muted" style="width: 200px;">Date of Birth</th>
+                  <td>{{ dateofBirthAsLocalDate() }}</td>
+                </tr>
+                <tr>
+                  <th class="text-muted">Description</th>
+                  <td>{{ horse.description ?? '-' }}</td>
+                </tr>
+                <tr>
+                  <th class="text-muted">Owner</th>
+                  <td>
+                    @if (horse.owner) {
+                      <span class="badge bg-info text-dark">{{ ownerName() }}</span>
+                    } @else {
+                      <span class="text-muted">No owner</span>
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <th class="text-muted">Mother</th>
+                  <td>
+                    @if (horse.mother) {
+                      <a [routerLink]="['/horses', horse.mother.id]" class="btn btn-sm btn-outline-pink">
+                        <i class="bi bi-gender-female"></i> {{ horse.mother.name }}
+                      </a>
+                    } @else {
+                      <span class="text-muted">-</span>
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <th class="text-muted">Father</th>
+                  <td>
+                    @if (horse.father) {
+                      <a [routerLink]="['/horses', horse.father.id]" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-gender-male"></i> {{ horse.father.name }}
+                      </a>
+                    } @else {
+                      <span class="text-muted">-</span>
+                    }
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          @if (horse.image) {
+            <div class="col-md-4 d-flex justify-content-center align-items-start">
+              <img
+                [src]="horse.image"
+                alt="Horse image"
+                class="img-fluid rounded shadow-sm"
+                style="max-height: 250px; object-fit: cover;">
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="card-footer d-flex gap-2">
+        <a class="btn btn-warning" [routerLink]="['/horses', horse.id, 'edit']">
+          <i class="bi bi-pencil"></i> Edit
+        </a>
+        <button class="btn btn-danger"
+                (click)="horseForDeletion = horse ?? undefined"
+                data-bs-toggle="modal"
+                data-bs-target="#delete-dialog">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+        <a class="btn btn-emerald" [routerLink]="['/horses', horse.id, 'familytree']">
+          <i class="bi bi-diagram-3"></i> Family Tree
+        </a>
+        <button class="btn btn-secondary ms-auto" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <app-confirm-delete-dialog
+    id="delete-dialog"
+    [hidden]="!horseForDeletion"
+    [deleteWhat]="horseForDeletion?.name"
+    (confirm)="delete()">
+  </app-confirm-delete-dialog>
+
+} @else {
+  <div class="d-flex justify-content-center mt-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+}

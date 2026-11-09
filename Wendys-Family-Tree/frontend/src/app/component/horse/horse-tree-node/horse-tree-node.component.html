@@ -1,0 +1,48 @@
+<div class="tree-node-wrapper">
+  <div class="tree-node d-flex align-items-center p-2 mb-1 rounded"
+       style="background-color: #f8f9fa; border-left: 4px solid #0d6efd; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <button
+      class="btn btn-sm btn-outline-primary me-3"
+      style="width: 32px; height: 32px; border-radius: 50%; font-weight: bold; line-height: 1; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 18px;"
+      (click)="toggleCollapse()"
+      [disabled]="!hasParents()">
+      <i [class]="isCollapsed() ? 'bi bi-plus' : 'bi bi-dash'"></i>
+    </button>
+    <a [routerLink]="['/horses', node.id]" class="me-auto fw-semibold text-decoration-none text-dark fs-5">
+      {{ node.name }}
+    </a>
+    <span class="badge bg-secondary me-3">{{ dateAsLocalDate() }}</span>
+    <button
+      class="btn btn-sm btn-danger"
+      (click)="onDeleteRequest(node)">
+      <i class="bi bi-trash"></i> Delete
+    </button>
+  </div>
+
+  @if (!isCollapsed()) {
+    @if (node.mother) {
+      <div class="ms-4 mt-1 position-relative">
+        <div style="border-left: 2px dashed #0d6efd; padding-left: 12px;">
+          <small class="text-muted fst-italic">Mother</small>
+          <app-horse-tree-node
+            [node]="node.mother"
+            [collapsedNodes]="collapsedNodes"
+            (deleteRequest)="onDeleteRequest($event)">
+          </app-horse-tree-node>
+        </div>
+      </div>
+    }
+    @if (node.father) {
+      <div class="ms-4 mt-1 position-relative">
+        <div style="border-left: 2px dashed #198754; padding-left: 12px;">
+          <small class="text-muted fst-italic">Father</small>
+          <app-horse-tree-node
+            [node]="node.father"
+            [collapsedNodes]="collapsedNodes"
+            (deleteRequest)="onDeleteRequest($event)">
+          </app-horse-tree-node>
+        </div>
+      </div>
+    }
+  }
+</div>

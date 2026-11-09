@@ -1,0 +1,176 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header text-white d-flex align-items-center"
+         [style.background-color]="modeIsCreate ? '#0d6efd' : '#f0a500'">
+      <h1 class="mb-0 fs-2">{{ heading }}</h1>
+    </div>
+
+    <div class="card-body">
+      <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="horseName" class="form-label text-muted fw-semibold">Name</label>
+            <input
+              type="text"
+              id="horseName"
+              name="horseName"
+              placeholder="e.g. John"
+              class="form-control"
+              [class.is-invalid]="horseNameModel.invalid && !horseNameModel.pristine"
+              [(ngModel)]="horse.name"
+              #horseNameModel="ngModel"
+              required>
+            <div class="invalid-feedback">Name is required</div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="horseDateOfBirth" class="form-label text-muted fw-semibold">Date of Birth</label>
+            <input
+              type="date"
+              id="horseDateOfBirth"
+              name="horseDateOfBirth"
+              class="form-control"
+              [class.is-invalid]="horseDateOfBirthModel.invalid && !horseDateOfBirthModel.pristine"
+              [(ngModel)]="horse.dateOfBirth"
+              #horseDateOfBirthModel="ngModel"
+              required>
+            <div class="invalid-feedback">Date of birth is required</div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="horseSex" class="form-label text-muted fw-semibold">Sex</label>
+            <select
+              class="form-select"
+              id="horseSex"
+              name="horseSex"
+              [(ngModel)]="horse.sex"
+              required>
+              <option value="" disabled selected>Select sex</option>
+              <option value="FEMALE">Female</option>
+              <option value="MALE">Male</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="horseOwner" class="form-label text-muted fw-semibold">Owner <span class="text-muted fw-normal">(optional)</span></label>
+            <app-autocomplete
+              #ownerAutocomplete
+              id="horseOwner"
+              name="horseOwner"
+              textInputClass="form-control"
+              placeholder="e.g. John Doe"
+              valueNeedsToMatchSuggestion="true"
+              [(ngModel)]="horse.owner"
+              [formatModel]="formatOwnerName"
+              [suggestions]="ownerSuggestions">
+            </app-autocomplete>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="horseMother" class="form-label text-muted fw-semibold">Mother <span class="text-muted fw-normal">(optional)</span></label>
+            <app-autocomplete
+              #motherAutocomplete
+              id="horseMother"
+              name="horseMother"
+              textInputClass="form-control"
+              placeholder="e.g. Wendy"
+              valueNeedsToMatchSuggestion="true"
+              [(ngModel)]="horse.mother"
+              [formatModel]="formatHorseName"
+              [suggestions]="motherSuggestions">
+            </app-autocomplete>
+          </div>
+
+          <div class="col-md-6">
+            <label for="horseFather" class="form-label text-muted fw-semibold">Father <span class="text-muted fw-normal">(optional)</span></label>
+            <app-autocomplete
+              #fatherAutocomplete
+              id="horseFather"
+              name="horseFather"
+              textInputClass="form-control"
+              placeholder="e.g. John"
+              valueNeedsToMatchSuggestion="true"
+              [(ngModel)]="horse.father"
+              [formatModel]="formatHorseName"
+              [suggestions]="fatherSuggestions">
+            </app-autocomplete>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="horseDescription" class="form-label text-muted fw-semibold">Description <span class="text-muted fw-normal">(optional)</span></label>
+          <textarea
+            class="form-control"
+            placeholder="e.g. A strong and healthy horse"
+            id="horseDescription"
+            name="horseDescription"
+            rows="3"
+            [(ngModel)]="horse.description">
+          </textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="horseImage" class="form-label text-muted fw-semibold">Image <span class="text-muted fw-normal">(optional)</span></label>
+          <input
+            type="file"
+            accept="image/*"
+            id="horseImage"
+            name="horseImage"
+            class="form-control"
+            (change)="onImageSelected($event)">
+            @if (horse.image && horse.image !== '') {
+              <div class="mt-2" 
+               style="position: relative; display: inline-block; width: fit-content;"
+              (mouseenter)="showDeleteImage = true"
+              (mouseleave)="showDeleteImage = false">
+              <img [src]="horse.image" alt="Horse image" class="rounded shadow-sm" style="max-height: 200px; display: block;" />
+              @if (showDeleteImage) {
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  style="position: absolute; top: 4px; right: 4px; border-radius: 50%; width: 24px; height: 24px; padding: 0; line-height: 1;"
+                  (click)="removeImage()">
+                <i class="bi bi-x"></i>
+                </button>
+             }
+              </div>
+            }   
+        </div>
+      </form>
+    </div>
+
+    <div class="card-footer d-flex gap-2">
+      <button
+        class="btn btn-primary"
+        type="submit"
+        (click)="onSubmit(form)">
+        {{ submitButtonText }}
+      </button>
+
+      @if (!modeIsCreate) {
+        <button
+          class="btn btn-danger"
+          type="button"
+          (click)="horseForDeletion = horse"
+          data-bs-toggle="modal"
+          data-bs-target="#delete-dialog">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+      }
+
+      <button class="btn btn-secondary ms-auto" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-confirm-delete-dialog
+  id="delete-dialog"
+  [deleteWhat]="horseForDeletion?.name"
+  (confirm)="delete()">
+</app-confirm-delete-dialog>

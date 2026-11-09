@@ -1,0 +1,60 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header text-white d-flex align-items-center"
+         style="background-color: #0d6efd;">
+      <h1 class="mb-0 fs-2">Create New Owner</h1>
+    </div>
+
+    <div class="card-body">
+      <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+        <div class="mb-3">
+          <label for="ownerName" class="form-label fw-semibold text-muted">
+            Name <span class="text-muted fw-normal">(First Last)</span>
+          </label>
+          <input
+            type="text"
+            id="ownerName"
+            name="ownerName"
+            class="form-control"
+            placeholder="e.g. John Doe"
+            [(ngModel)]="ownerName"
+            (input)="ownerName = ownerName.trimStart()"
+            #ownerNameModel="ngModel"
+            [class.is-invalid]="ownerNameModel.invalid && !ownerNameModel.pristine"
+            required>
+          <div class="invalid-feedback">Name is required</div>
+          <div class="form-text">Enter first and last name separated by a space.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="ownerEmail" class="form-label fw-semibold text-muted">
+            Email <span class="text-muted fw-normal">(optional)</span>
+          </label>
+          <input
+            type="email"
+            id="ownerEmail"
+            name="ownerEmail"
+            class="form-control"
+            placeholder="e.g. john@example.com"
+            [(ngModel)]="email"
+            pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+            #ownerEmailModel="ngModel"
+            [class.is-invalid]="ownerEmailModel.invalid && !ownerEmailModel.pristine">
+          <div class="invalid-feedback">Please enter a valid email address</div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card-footer d-flex gap-2">
+      <button
+        class="btn btn-primary"
+        type="submit"
+        (click)="onSubmit(form)">
+        <i class="bi bi-person-plus"></i> Create
+      </button>
+      <button class="btn btn-secondary ms-auto" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+    </div>
+  </div>
+</div>

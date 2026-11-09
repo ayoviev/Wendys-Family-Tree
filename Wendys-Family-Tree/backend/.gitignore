@@ -1,0 +1,49 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### AI Generated ###
+### Prompt: Can you fix the backend .gitignore file, such that it blocks the ###
+### "commit" of the .db files such as wendydb.lock.db, wendudb.mv.db and wendydb.trace.db ### 
+### H2 Database files ###
+*.db
+*.mv.db
+*.trace.db
+*.lock.db
+
+### AI Generated ###
+### Prompt: Implement the sutiable things for .gitignore, such that the log files are ignored for the commiting. ###
+### Runtime log files ###
+/log/
+*.log
+*.log.*

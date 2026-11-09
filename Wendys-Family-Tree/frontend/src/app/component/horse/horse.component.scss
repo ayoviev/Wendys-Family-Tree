@@ -1,0 +1,30 @@
+@use "sass:map";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+.min-width {
+    /* Used to get the actions column in the table to be not wider than necessary */
+    width: 0;
+}
+
+.center-td > td {
+    vertical-align: middle;
+}
+
+.responsive-info-button, .responsive-warning-button, .responsive-danger-button, .responsive-dark-button, .responsive-tree-button {
+    @include button-variant($light, $light);
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+@each $color in (info, warning, danger) {
+    $value: map.get($theme-colors, $color);
+    tr:hover .responsive-#{$color}-button {
+        @include button-variant($value, $value);
+    }
+}
+
+$emerald: #2ecc71;
+tr:hover .responsive-tree-button {
+    @include button-variant($emerald, $emerald);
+}

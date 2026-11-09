@@ -1,0 +1,30 @@
+<h1 class="display-1">Family Tree</h1>
+
+<div class="d-flex align-items-center gap-3 mb-4">
+  <label for="generations" class="col-form-label">Generations:</label>
+  <input
+    type="number"
+    id="generations"
+    name="generations"
+    class="form-control"
+    style="width: 80px;"
+    [(ngModel)]="generations"
+    min="0">
+  <button class="btn btn-primary" (click)="loadTree()">Load</button>
+  <a class="btn btn-secondary" (click)="goBack()" >
+    <i class="bi bi-arrow-left"></i>Back</a>
+</div>
+
+@if (tree) {
+  <app-horse-tree-node
+    [node]="tree"
+    [collapsedNodes]="collapsedNodes"
+    (deleteRequest)="confirmDelete($event)">
+  </app-horse-tree-node>
+}
+
+<app-confirm-delete-dialog
+  id="delete-dialog"
+  [deleteWhat]="horseForDeletion?.name"
+  (confirm)="deleteHorse(horseForDeletion)">
+</app-confirm-delete-dialog>
