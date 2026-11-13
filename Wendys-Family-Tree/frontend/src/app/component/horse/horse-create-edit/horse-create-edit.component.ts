@@ -164,7 +164,7 @@ public formatHorseName(horse: Horse | null | undefined): string {
       const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
       const selectedSizeMb = (file.size / (1024 * 1024)).toFixed(1);
       if(file.size > maxSizeInBytes){
-        this.notification.error('Image is too large. Selected: ' + selectedSizeMb + ' MB.' + 
+        this.notification.error('Image is too large. Selected: ' + selectedSizeMb + ' MB.' +
           ' Max Size: ' + maxSizeInBytes / (1024 * 1024) + ' MB');
         (event.target as HTMLInputElement).value = ''; // Clearing the file input
         return;
@@ -214,36 +214,63 @@ public formatHorseName(horse: Horse | null | undefined): string {
 
 
   public onSubmit(form: NgForm): void {
-    if (!this.horse.name || !this.horse.dateOfBirth || !this.horse.sex) {
-      this.notification.error('Name, Birth Date and Sex are required.', 'Validation error');
-      return;
-    }
-    if (form.valid) {
-      const nameRegex = /^[A-Z][a-z]*$/;
-      if (!nameRegex.test(this.horse.name)) {
-        this.notification.error(
-        'Horse name must start with an uppercase letter, contains only lowercase letters afterwards and contains no spaces.',
-        'Validation error'
-      );
-      return;
-      }
+    const errors: { title: string, message: string }[] = [];
 
-      if (this.ownerAutocomplete?.hasUnmatchedInput) {
-        this.notification.error(
-        'Please select a valid owner from the suggestions or clear the input.',
-        'Invalid owner'
+    if (!this.horse.name) {
+      errors.push(
+        { title: 'Name is required.',
+          message: 'Please enter a name.' }
       );
-      return;
+    } else if (!/^[A-Z][a-z]*$/.test(this.horse.name)) {
+      errors.push(
+        { title: 'Invalid horse name',
+          message: 'Horse name must start with an uppercase letter, contains only lowercase letters afterwards and contains no spaces.' }
+      );
     }
 
-      if (this.motherAutocomplete?.hasUnmatchedInput) {
-        this.notification.error('Please select a valid mother or clear the input.', 'Invalid mother');
-        return;
-      }
-      if (this.fatherAutocomplete?.hasUnmatchedInput) {
-        this.notification.error('Please select a valid father or clear the input.', 'Invalid father');
-        return;
-      }
+    if (!this.horse.dateOfBirth) {
+      errors.push(
+        { title: 'Date of birth is required.',
+          message: 'Please enter a date of birth' }
+      );
+    } else if (new Date(this.horse.dateOfBirth) > new Date()) {
+      errors.push(
+        { title: 'Invalid date of birth',
+          message: 'Date of birth cannot be in the future' }
+      );
+    }
+
+    if (!this.horse.sex) {
+      errors.push(
+        { title: "Sex is required.",
+          message: 'Please select Male or Female' }
+      );
+    }
+
+    if (this.ownerAutocomplete?.hasUnmatchedInput) {
+      errors.push(
+        { title: 'Invalid Owner',
+          message: 'Please select a valid owner from the suggestions or clear the input.' }
+      );
+    }
+
+    if (this.motherAutocomplete?.hasUnmatchedInput) {
+      errors.push(
+        { title: 'Invalid Mother',
+          message: 'Please select a valid mother or clear the input.' }
+      );
+    }
+    if (this.fatherAutocomplete?.hasUnmatchedInput) {
+      errors.push(
+        { title: 'Invalid Father',
+          message: 'Please select a valid father or clear the input.' }
+      );
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(e => this.notification.error(e.message, e.title));
+      return;
+    }
 
       if (this.horse.description === '') {
         delete this.horse.description;
@@ -282,21 +309,19 @@ public formatHorseName(horse: Horse | null | undefined): string {
         error: (error: any) => {
           const backendMessage = error?.error?.message;
           const details = error?.error?.errors;
-          const detailText = Array.isArray(details) && details.length > 0
-            ? details.join('; ')
-            : null;
+          if (Array.isArray(details) && details.length > 0) {
+            details.forEach((e: string) => this.notification.error(e, 'Validation error'));
+            return;
+          }
           const genericText = this.mode === HorseCreateEditMode.edit
             ? 'Updating horse failed due to an unexpected backend error.'
             : 'Creating horse failed due to an unexpected backend error.';
           this.notification.error(
-            detailText
-              ? detailText
-              : (backendMessage ?? `${genericText} (HTTP ${error?.status ?? 'unknown'})`),
+            backendMessage ?? genericText,
             this.mode === HorseCreateEditMode.edit ? 'Update failed' : 'Create failed'
           );
         }
       });
-    }
   }
 
   public goBack(): void {
