@@ -129,7 +129,7 @@ public class HorseValidator {
   /**
    * Checks the parent data of a horse, adding any validation or conflict errors
    * to the provided list.
-   *
+   * 
    * @param horseId          the ID of the horse being validated
    * @param motherId         the ID of the mother horse
    * @param fatherId         the ID of the father horse
@@ -194,7 +194,7 @@ public class HorseValidator {
       List<Horse> children = horseDao.getChildrenOfMother(horseId);
       if (!children.isEmpty()) {
         conflictErrors.add(
-                "This horse is the mother of %s and cannot be changed to male."
+                "Cannot be changed to male: mother of %s."
                         .formatted(formatChildNames(children)));
       }
     }
@@ -202,12 +202,12 @@ public class HorseValidator {
       List<Horse> children = horseDao.getChildrenOfFather(horseId);
       if (!children.isEmpty()) {
         conflictErrors.add(
-                "This horse is the father of %s and cannot be changed to female."
+                "Cannot be changed to female: father of %s."
                         .formatted(formatChildNames(children)));
       }
     }
     if (!conflictErrors.isEmpty()) {
-      throw new ConflictException("Conflict in children data", conflictErrors);
+      throw new ConflictException("Cannot change sex", conflictErrors);
     }
   }
 
