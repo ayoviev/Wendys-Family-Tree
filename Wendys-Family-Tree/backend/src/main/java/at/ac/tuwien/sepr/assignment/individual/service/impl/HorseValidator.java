@@ -13,6 +13,8 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -82,6 +84,8 @@ public class HorseValidator {
     if (!validationErrors.isEmpty()) {
       throw new ValidationException("Validation of horse for update failed", validationErrors);
     }
+
+    checkChildrenData(id, horse.sex());
   }
 
   /**
@@ -173,5 +177,48 @@ public class HorseValidator {
     if (!conflictErrors.isEmpty()) {
       throw new ConflictException("Conflict in parent data", conflictErrors);
     }
+  }
+
+  /**
+   * Checks whether the sex of a horse can be changed without breaking existing parent relations.
+   * A horse that is the mother of other horses cannot become male,
+   * and a horse that is the father of other horses cannot become female.
+   *
+   * @param horseId the ID of the horse being updated
+   * @param newSex  the sex the horse is being changed to
+   * @throws ConflictException if the horse is a parent and the new sex contradicts that role
+   */
+  private void checkChildrenData(Long horseId, Sex newSex) throws ConflictException {
+    List<String> conflictErrors = new ArrayList<>();
+    if (newSex == Sex.MALE) {
+      List<Horse> children = horseDao.getChildrenOfMother(horseId);
+      if (!children.isEmpty()) {
+        conflictErrors.add(
+                "Cannot be changed to male: mother of %s."
+                        .formatted(formatChildNames(children)));
+      }
+    }
+    if (newSex == Sex.FEMALE) {
+      List<Horse> children = horseDao.getChildrenOfFather(horseId);
+      if (!children.isEmpty()) {
+        conflictErrors.add(
+                "Cannot be changed to female: father of %s."
+                        .formatted(formatChildNames(children)));
+      }
+    }
+    if (!conflictErrors.isEmpty()) {
+      throw new ConflictException("Cannot change sex", conflictErrors);
+    }
+  }
+
+  private String formatChildNames(List<Horse> children) {
+    String names = children.stream()
+            .limit(3)
+            .map(Horse::name)
+            .collect(Collectors.joining(", "));
+    if (children.size() > 3) {
+      names += " and " + (children.size() - 3) + " more";
+    }
+    return names;
   }
 }

@@ -310,7 +310,7 @@ public formatHorseName(horse: Horse | null | undefined): string {
           const backendMessage = error?.error?.message;
           const details = error?.error?.errors;
           if (Array.isArray(details) && details.length > 0) {
-            details.forEach((e: string) => this.notification.error(e, 'Validation error'));
+            details.forEach((e: string) => this.notification.error(e, backendMessage ?? 'Please check your input'));
             return;
           }
           const genericText = this.mode === HorseCreateEditMode.edit
