@@ -84,7 +84,7 @@ export class AutocompleteComponent<T> implements OnInit, ControlValueAccessor {
     this.inputChange
       .pipe(
         tap(this.checkIfInputMatchesCandidate.bind(this)),
-        debounceTime(0),
+        debounceTime(300),
         switchMap(this.suggestions),
       )
       .subscribe({
@@ -166,7 +166,7 @@ export class AutocompleteComponent<T> implements OnInit, ControlValueAccessor {
   }
 
   public get hasUnmatchedInput(): boolean {
-    if (this.inputText === '') { 
+    if (this.inputText === '') {
       return false; // empty = no parent, which is fine
     }
     if (this.value == null) {

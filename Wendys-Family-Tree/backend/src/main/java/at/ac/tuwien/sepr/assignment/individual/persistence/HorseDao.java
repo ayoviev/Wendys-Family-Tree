@@ -79,4 +79,21 @@ public interface HorseDao {
    * @throws NotFoundException if the horse with the given ID does not exist in the persistent data store
    */
   List<Horse> getFamilyTree(long id, int generations) throws NotFoundException;
+
+
+  /**
+   * Get the children of the horse with the given mother ID.
+   *
+   * @param motherId the ID of the mother horse
+   * @return a list of horses that are children of the given mother
+   */
+  List<Horse> getChildrenOfMother(long motherId);
+
+  /**
+   * Get the children of the horse with the given father ID.
+   *
+   * @param fatherId the ID of the father horse
+   * @return a list of horses that are children of the given father
+   */
+  List<Horse> getChildrenOfFather(long fatherId);
 }

@@ -54,6 +54,12 @@ public class HorseJdbcDao implements HorseDao {
       + " WHERE a.generation < :generations)"
       + " SELECT * FROM ancestors";
 
+  private static final String SQL_SELECT_CHILDREN_OF_MOTHER = "SELECT * FROM " + TABLE_NAME
+      + " WHERE mother_id = :mother_id";
+
+  private static final String SQL_SELECT_CHILDREN_OF_FATHER = "SELECT * FROM " + TABLE_NAME
+      + " WHERE father_id = :father_id";
+
   private final JdbcClient jdbcClient;
 
   /**
@@ -262,5 +268,25 @@ public class HorseJdbcDao implements HorseDao {
         .param("generations", generations)
         .query(this::mapRow)
         .list();
+  }
+
+  @Override
+  public List<Horse> getChildrenOfMother(long motherId) {
+    LOG.trace("getChildrenofMother({})", motherId);
+    return jdbcClient
+            .sql(SQL_SELECT_CHILDREN_OF_MOTHER)
+            .param("mother_id", motherId)
+            .query(this::mapRow)
+            .list();
+  }
+
+  @Override
+  public List<Horse> getChildrenOfFather(long fatherId) {
+    LOG.trace("getChildrenOfFather({})", fatherId);
+    return jdbcClient
+            .sql(SQL_SELECT_CHILDREN_OF_FATHER)
+            .param("father_id", fatherId)
+            .query(this::mapRow)
+            .list();
   }
 }
